@@ -4,7 +4,7 @@
   console.log(form);
   const formText = document.querySelector('#form-text');
   const taskBox = document.querySelector('.task-list');
-  const taskList = [];
+  let taskList = [];
   let taskId = 0;
 
 
@@ -14,6 +14,10 @@
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const taskName = textCheck(formText.value);
+      if (!taskName) {
+        formText.value = '';
+        return
+      };
       const newTask = new NewItem(taskName);
       taskList.push(newTask);
       console.log(taskList);
@@ -22,11 +26,10 @@
     })
   }
 
-//入力された文字の確認・トリム
+//入力された文字の確認
   function textCheck(text) {
     if (text.trim() === '') {
       alert('タスクを入力してください')
-      return
     } else {
       return text;
     }
@@ -43,29 +46,42 @@
 
 //HTML<ul>内の更新
   function upDateHtml() {
+
+    // <ul>を削除後、itemの完了状態に合わせた子要素の追加
     taskBox.innerHTML = '';
     taskList.forEach(item => {
       const newNode = document.createElement('li');
       const newNodeHtml = item.completed
         ? `<input type="checkbox" class="checkbox" checked>
-          <span class="task-name">${item.taskName}</span
-            <span>×</span>`
+          <span class="checked">${item.taskName}</span>
+            <span class="delete-button">×</span>`
         : `<input type="checkbox" class="checkbox">
-          <span class="task-name">${item.taskName}</span>
-          <span>×</span>`;
+          <span>${item.taskName}</span>
+          <span class="delete-button">×</span>`;
       newNode.innerHTML = newNodeHtml;
 
+      // チェックボックスとitem.completedの同期
       const checkbox = newNode.querySelector('.checkbox');
-      const taskDecoration = newNode.querySelector('.task-name')
       checkbox.addEventListener('click', () => {
         if (item.completed) {
-          item.completed = false;
+          item.completed = false
         } else if (!item.completed) {
           item.completed = true;
         }
-        taskDecoration.classList.toggle('checked');
-        console.log(item);
+        upDateHtml();
       });
+
+      //削除機能
+      const deleteButton = newNode.querySelector('.delete-button');
+      const deleteId = item.id;
+      deleteButton.addEventListener('click', () => {
+        taskList = taskList.filter((task) => {
+          return task.id !== deleteId;
+        });
+        console.log(taskList);
+        upDateHtml()
+      });
+
       taskBox.appendChild(newNode);
       }
     );
