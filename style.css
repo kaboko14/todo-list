@@ -1,0 +1,8 @@
+li {
+  list-style: none;
+}
+
+li > .checked {
+  text-decoration: line-through;
+  color: #999;
+}
