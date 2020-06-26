@@ -1,14 +1,14 @@
 'use strict'
 {
 //変数・定数の宣言
-  const formTask = document.querySelector('#form-task');
-  const formTaskInput = document.querySelector('#form-task-input');
-  const listTitle = document.querySelector('.list-title');
-  const taskBox = document.querySelector('.task-list');
+  const formTask = document.querySelector('.js_form-task');
+  const formTaskInput = document.querySelector('.js_form-task-input');
+  const listTitle = document.querySelector('.js_list-title');
+  const taskBox = document.querySelector('.js_task-list');
   let taskList = [];
   let taskId = 0;
-  const formSearch = document.querySelector('#form-search');
-  const formSearchInput = document.querySelector('#form-search-input');
+  const formSearch = document.querySelector('.js_form-search');
+  const formSearchInput = document.querySelector('.js_form-search-input');
 
 
 //ローカルステージにデータがあれば取得
@@ -17,8 +17,12 @@
     taskList = localStorageDate;
     //taskListが空ならidの初期値は０、空でなければ最大値+1
     taskId = taskList.length
-      ? Math.max.apply(null, taskList.map(item => item.id)) + 1
+      ? Math.max.apply(null, taskList.map(task => task.id)) + 1
       : 0;
+    //検索状態の解除
+    taskList.forEach(task => {
+      task.filtered = false;
+    });
     upDateHtml();
   }
 
@@ -28,12 +32,10 @@
   search();
 
 
-
-
 /*------------------
 新しいタスクのひな形
 -------------------*/
-  class NewItem {
+  class NewTask {
     constructor(task) {
       this.taskName = task;
       this.id = taskId++;
@@ -48,8 +50,8 @@
   function addTask() {
     formTask.addEventListener('submit', (e) => {
       e.preventDefault();
-      taskList.forEach(item => {
-        item.filtered = false;
+      taskList.forEach(task => {
+        task.filtered = false;
       });
       listTitle.innerHTML='リスト一覧'
       const taskName = wordCheck(formTaskInput.value);
@@ -57,9 +59,8 @@
         formTaskInput.value = '';
         return
       };
-      const newTask = new NewItem(taskName);
+      const newTask = new NewTask(taskName);
       taskList.push(newTask);
-      console.log(taskList);
       upDateHtml()
       formTaskInput.value = '';
     })
@@ -74,7 +75,7 @@
       caution(true, formTask,'タスクを入力してください')
       return;
     }
-    if (taskList.some((task)=>
+    if (taskList.some(task=>
       task.taskName === str)) {
       caution(true, formTask, '登録済みのタスクです')
       return
@@ -87,16 +88,15 @@
 注意のコメント表示
 ----------------*/
   function caution(display,node, comment) {
-    const cautionElement = document.querySelector('.caution');
+    const cautionElement = document.querySelector('.js_caution');
     if (cautionElement) {
-      console.log(cautionElement);
       cautionElement.parentNode.removeChild(cautionElement)
     }
     if (!display) {
       return
     }
     const newCautionElement = document.createElement('p');
-    newCautionElement.classList.add('caution')
+    newCautionElement.classList.add('js_caution')
     newCautionElement.textContent = `${comment}`;
     node.insertBefore(newCautionElement, node.firstChild);
   }
@@ -107,20 +107,21 @@
   function makeHtml(taskItem) {
     //taskItemの完了・検索の状態に合わせた<li>の作成
     const newNode = document.createElement('li');
+    newNode.classList.add('js_list-item')
     const newNodeHtml = taskItem.completed
-      ? `<input type="checkbox" class="checkbox" checked>
-          <span class="checked">${taskItem.taskName}</span>
-            <span class="delete-button">×</span>`
-      : `<input type="checkbox" class="checkbox">
+      ? `<input type="checkbox" class="js_checkbox" checked>
+          <span class="js_checked">${taskItem.taskName}</span>
+            <span class="js_delete-button">×</span>`
+      : `<input type="checkbox" class="js_checkbox">
           <span>${taskItem.taskName}</span>
-          <span class="delete-button">×</span>`;
+          <span class="js_delete-button">×</span>`;
     if (taskItem.filtered) {
-      newNode.classList.add('filtered')
+      newNode.classList.add('main__filtered')
     }
     newNode.innerHTML = newNodeHtml;
 
-    // チェックボックスとitem.completedの同期機能
-    const checkbox = newNode.querySelector('.checkbox');
+    // チェックボックスとcompletedの同期機能
+    const checkbox = newNode.querySelector('.js_checkbox');
     checkbox.addEventListener('click', () => {
       if (taskItem.completed) {
         taskItem.completed = false
@@ -131,15 +132,16 @@
     });
 
     //削除機能
-    const deleteButton = newNode.querySelector('.delete-button');
+    const deleteButton = newNode.querySelector('.js_delete-button');
     const deleteId = taskItem.id;
     deleteButton.addEventListener('click', () => {
-      taskList = taskList.filter((task) => {
+      taskList = taskList.filter(task => {
         return task.id !== deleteId;
       });
       upDateHtml()
     });
 
+    //<ul>に作成した要素の追加
     taskBox.appendChild(newNode);
   }
 
@@ -150,10 +152,10 @@
   function upDateHtml() {
     // <ul>を削除後、再度HTMLの作成
     taskBox.innerHTML = '';
-    taskList.forEach(item => {
-      makeHtml(item);
+    taskList.forEach(task => {
+      makeHtml(task);
     });
-    //ローカルストレージのセーブ
+    //ローカルストレージにセーブ
     saveStorage()
   }
 
@@ -165,27 +167,29 @@
       e.preventDefault();
       const keyword = formSearchInput.value;
       const lowerKeyword = keyword.toLowerCase();
-      console.log(lowerKeyword);
       if (!keyword.trim()) {
         caution(true, formSearch, 'キーワードを入力してください')
         return
       } else {
         caution(false);
       }
-      taskList.forEach((item) => {
-        const lowerTaskName = item.taskName.toLowerCase();
-        if (!lowerTaskName.includes(keyword)){
-          item.filtered = true;
+      taskList.forEach(task => {
+        const lowerTaskName = task.taskName.toLowerCase();
+        if (!lowerTaskName.includes(lowerKeyword)){
+          task.filtered = true;
         } else {
-          item.filtered = false;
+          task.filtered = false;
         }
       });
       upDateHtml();
       formSearchInput.value = '';
-      listTitle.innerHTML = `「${keyword}」検索結果 <span class="searchCancel">[検索解除]</span>`;
-      document.querySelector('.searchCancel').addEventListener('click', () => {
-        taskList.forEach((item) => {
-          item.filtered = false;
+
+      //結果表示のタイトル・検索解除ボタンの作成
+      listTitle.innerHTML = `「${keyword}」検索結果
+      <span class="js_searchCancel">検索解除</span>`;
+      document.querySelector('.js_searchCancel').addEventListener('click', () => {
+        taskList.forEach(task => {
+          task.filtered = false;
         });
         upDateHtml();
         listTitle.innerHTML = 'リスト一覧'
