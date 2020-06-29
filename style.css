@@ -1,11 +1,174 @@
-li {
-  list-style: none;
+/* 共通箇所 */
+* {
+  box-sizing: border-box;
 }
 
-li > .checked {
+body {
+  letter-spacing: 0.05em;
+  background-color: #87E5D5;
+  font-family: 'Noto Sans JP', sans-serif;
+  color:#303030;
+}
+
+li {
+  line-height: 2;
+  margin-bottom: 6px;
+  padding: 0 40px 0px 10px;
+  border-bottom: 1px solid #d1d1d1;
+}
+
+li > .js_checked {
   text-decoration: line-through;
   color: #999;
 }
-.delete-button {
+
+.container {
+  max-width: 790px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ヘッダー */
+.header {
+  width: 100%;
+  margin:60px auto 30px ;
+  text-align: center;
+}
+
+.header__title {
+  font-size: 2.5rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.header__form-container {
+  display: grid;
+  grid-template-columns: 1fr ;
+  gap: 30px;
+  padding-top: 30px;
+  justify-content: space-between;
+}
+
+.header__form {
+  position: relative;
+  width: 100%;
+}
+
+.header__form-input {
+  border: none;
+  width: 100%;
+  display: inline-block;
+  border-radius: 3px;
+  padding: 8px 6px 6px 34px
+}
+
+.header__form::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+}
+
+.form-task::before {
+  background-image: url(icon/icon-plus.svg);
+}
+
+.header__form::placeholder {
+  font-family: 'Noto Sans JP', sans-serif;;
+}
+
+.form-search::before {
+  background-image: url(icon/icon-search.svg);
+}
+
+/* フォーム入力エラー時のメッセージ */
+.js_caution {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #fff;
+  background: #FF3B42;
+  padding: 2px 4px;
+border-radius: 3px;
+  position: absolute;
+  top: -20px;
+}
+
+/* タスクリスト */
+.main {
+  width: 100%;
+  background-color: #fff;
+  margin: 0 auto;
+  padding: 25px 6.6666% 40px;
+  border-radius: 6px;
+}
+
+.main__list-title {
+  text-align: center;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+.js_checkbox {
+  margin-right: 10px;
+}
+
+.js_list-item {
+  font-size: 1rem;
+  position: relative;
+}
+
+.js_delete-button {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  background-image: url(icon/icon-delete.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  padding: 2px;
+  position: absolute;
+  right: 8px;
+  bottom: 5px;
   cursor: pointer;
+}
+
+.js_searchCancel {
+  display: inline-block;
+  font-size: 0.875rem;
+  color: #fff;
+  background-color: #FF3B42;
+  padding: 3px 10px;
+  border-radius: 40px;
+  box-shadow: 0px 3px #B8181D;
+  margin-left: 10px;
+  padding: 3px 10px;
+  transform: translateY(-2px);
+  cursor: pointer;
+}
+
+.js_searchCancel:active {
+  transform: translateY(0px);
+  box-shadow: 0px 1px #B8181D;
+}
+
+.main__filtered {
+  display: none !important;
+}
+
+
+/* 横幅480px以下 */
+@media screen and (min-width:481px) {
+  .header__form-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    padding-top: 30px;
+    justify-content: space-between;
+  }
+
 }
