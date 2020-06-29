@@ -53,7 +53,7 @@
       taskList.forEach(task => {
         task.filtered = false;
       });
-      listTitle.innerHTML='リスト一覧'
+      listTitle.innerHTML='タスク一覧'
       const taskName = wordCheck(formTaskInput.value);
       if (!taskName) {
         formTaskInput.value = '';
@@ -111,10 +111,10 @@
     const newNodeHtml = taskItem.completed
       ? `<input type="checkbox" class="js_checkbox" checked>
           <span class="js_checked">${taskItem.taskName}</span>
-            <span class="js_delete-button">×</span>`
+            <span class="js_delete-button"></span>`
       : `<input type="checkbox" class="js_checkbox">
           <span>${taskItem.taskName}</span>
-          <span class="js_delete-button">×</span>`;
+          <span class="js_delete-button"></span>`;
     if (taskItem.filtered) {
       newNode.classList.add('main__filtered')
     }
@@ -192,7 +192,7 @@
           task.filtered = false;
         });
         upDateHtml();
-        listTitle.innerHTML = 'リスト一覧'
+        listTitle.innerHTML = 'タスク一覧'
       });
     });
   }
