@@ -72,34 +72,53 @@
   function wordCheck(word) {
     const str = word.trim()
     if (str === '') {
-      caution(true, formTask,'タスクを入力してください')
+      caution(true, '.js_no-task')
       return;
     }
     if (taskList.some(task=>
       task.taskName === str)) {
-      caution(true, formTask, '登録済みのタスクです')
+      caution(true, '.js_duplicate')
       return
     }
     caution(false);
-      return word;
+    return word;
   }
 
 /*----------------
 注意のコメント表示
 ----------------*/
-  function caution(display,node, comment) {
-    const cautionElement = document.querySelector('.js_caution');
-    if (cautionElement) {
-      cautionElement.parentNode.removeChild(cautionElement)
+  let timer;
+  function caution(display, cautionClass) {
+    const cautionElementAll = document.querySelectorAll('.js_caution')
+    cautionElementAll.forEach((el) => {
+      if (!el.classList.contains('display-none')) {
+        el.classList.add('display-none');
+      }
+    });
+    if (display) {
+      clearTimeout(timer);
+      const cautionElement = document.querySelector(cautionClass);
+      cautionElement.classList.remove('display-none');
+      timer=setTimeout(() => {
+        timer= cautionElement.classList.add('display-none');
+      },2000)
     }
-    if (!display) {
-      return
-    }
-    const newCautionElement = document.createElement('p');
-    newCautionElement.classList.add('js_caution')
-    newCautionElement.textContent = `${comment}`;
-    node.insertBefore(newCautionElement, node.firstChild);
   }
+
+  // function caution(display,node, comment) {
+  //   const cautionElement = document.querySelector('.js_caution');
+  //   if (cautionElement) {
+
+  //     cautionElement.parentNode.removeChild(cautionElement)
+  //   }
+  //   if (!display) {
+  //     return
+  //   }
+  //   const newCautionElement = document.createElement('p');
+  //   newCautionElement.classList.add('js_caution')
+  //   newCautionElement.textContent = `${comment}`;
+  //   node.insertBefore(newCautionElement, node.firstChild);
+  // }
 
 /*--------------------------------
 タスクのHTML<li>の作成・イベントの付与
@@ -168,7 +187,7 @@
       const keyword = formSearchInput.value;
       const lowerKeyword = keyword.toLowerCase();
       if (!keyword.trim()) {
-        caution(true, formSearch, 'キーワードを入力してください')
+        caution(true, '.js_no-keyword')
         return
       } else {
         caution(false);
